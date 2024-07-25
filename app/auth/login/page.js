@@ -1,8 +1,8 @@
-// pages/login.js
-'use client'
+'use client';
 import { useState } from 'react';
-import api from '../../lib/axios'; // Import your Axios instance
+import api from '../../lib/axios'; // Adjust the import path
 import Link from 'next/link';
+import Cookies from 'js-cookie'; // Import js-cookie
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -21,9 +21,20 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', formData); // Adjust endpoint as needed
-      console.log('Login successful', response.data);
-      // Handle successful login
+      const response = await api.post('/api/auth/login', formData);
+      console.log('Login response:', response.data);
+
+      if (response.status === 200 && response.data.token) {
+        // Login successful
+        // Save the JWT token as a cookie
+        Cookies.set('token', response.data.token, { expires: 1 }); // Expires in 1 day
+
+        // Redirect to dashboard or another page
+        window.location.href = '/dashboard';
+      } else {
+        // Handle specific error messages from the backend
+        setError(response.data.message || 'Login failed. Please try again.');
+      }
     } catch (err) {
       console.error('Login error:', err);
       setError('Login failed. Please try again.');

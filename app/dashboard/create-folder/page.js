@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
-import CustomSelect from './Custumselect';
+import CustomSelect from './Custumselect';// Ensure correct path
 
 // Mock data for forms, replace with actual data from your backend or state
 const mockForms = [
@@ -19,16 +19,40 @@ export default function CreateFolder() {
     setFolderName(e.target.value);
   };
 
-  const handleFormSelection = (value) => {
-    setSelectedForms(prev => 
-      prev.includes(value) ? prev.filter(v => v !== value) : [...prev, value]
-    );
+  const handleFormSelection = (selectedValues) => {
+    setSelectedForms(selectedValues);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle folder creation logic here, such as sending data to the server
-    console.log({ folderName, selectedForms });
+    const folderData = {
+      folderName,
+      selectedForms
+    };
+
+    // Log the data to the console
+    console.log('Folder Data:', folderData);
+
+    // Example: Send the data to the server
+    try {
+      const response = await fetch('/api/create-folder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(folderData),
+      });
+
+      if (response.ok) {
+        // Handle success
+        console.log('Folder created successfully');
+      } else {
+        // Handle error
+        console.error('Failed to create folder');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -54,6 +78,7 @@ export default function CreateFolder() {
               options={mockForms}
               selected={selectedForms}
               onChange={handleFormSelection}
+              isMulti
             />
             <p className="text-gray-500 text-xs mt-1">Hold down the Ctrl (or Command) key to select multiple options.</p>
           </div>

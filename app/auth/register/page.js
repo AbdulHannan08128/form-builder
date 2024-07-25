@@ -1,8 +1,8 @@
-// pages/register.js
-'use client'
+'use client';
 import { useState } from 'react';
-import api from '../../lib/axios'; // Import your Axios instance
+import api from '../../lib/axios'; // Adjust the import path
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -22,12 +22,30 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/register', formData); // Adjust endpoint as needed
-      console.log('Registration successful', response.data);
-      // Handle successful registration
+      const response = await api.post('/api/auth/register', formData);
+
+      if (response.status === 200 && response.data.token) {
+        // Registration successful
+        console.log('Registration successful', response.data);
+
+        // Save the JWT token as a cookie
+        Cookies.set('token', response.data.token, { expires: 1 }); // Expires in 1 day
+        
+        // Redirect to dashboard or another page
+        window.location.href = '/dashboard';
+      } else {
+        // Handle specific cases based on the response
+        if (response.data.message === 'User already exists') {
+          setError('User already exists. Please try logging in.');
+        } else {
+          setError('Registration failed. Please try again.');
+        }
+        // Don't redirect if there was an error
+      }
     } catch (err) {
       console.error('Registration error:', err);
       setError('Registration failed. Please try again.');
+      // Don't redirect if there was an error
     }
   };
 
@@ -77,8 +95,8 @@ export default function Register() {
           </div>
         </form>
         <div className="mt-6 text-center">
-          <Link href="/">
-            <span className="text-blue-500 hover:underline cursor-pointer">Back to Home</span>
+          <Link href="/" className='text-blue-500 hover:underline'>
+            Back to Home
           </Link>
         </div>
       </div>

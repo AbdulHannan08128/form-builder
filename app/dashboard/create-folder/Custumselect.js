@@ -1,33 +1,37 @@
 'use client'
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
-const CustomSelect = ({ options, selected, onChange }) => {
+const CustomSelect = ({ options, selected, onChange, isMulti }) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => setIsOpen(prev => !prev);
 
   const handleOptionClick = (value) => {
-    onChange(value);
-  };
-
-  // Close dropdown when clicking outside
-  const handleClickOutside = (event) => {
-    if (containerRef.current && !containerRef.current.contains(event.target)) {
+    if (isMulti) {
+      onChange(selected.includes(value) ? selected.filter(v => v !== value) : [...selected, value]);
+    } else {
+      onChange([value]);
       setIsOpen(false);
     }
   };
 
-  // useState(() => {
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, []);
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Create a label for the selected options
-  const selectedLabels = options
-    .filter(opt => selected.includes(opt.value))
-    .map(opt => opt.label)
-    .join(', ') || 'Select forms';
+  const selectedLabels = isMulti
+    ? options.filter(opt => selected.includes(opt.value)).map(opt => opt.label).join(', ') || 'Select forms'
+    : options.find(opt => opt.value === selected[0])?.label || 'Select a form';
 
   return (
     <div ref={containerRef} className="relative inline-block w-full">
@@ -56,4 +60,3 @@ const CustomSelect = ({ options, selected, onChange }) => {
 };
 
 export default CustomSelect;
-
