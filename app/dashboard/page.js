@@ -41,6 +41,11 @@ export default function Dashboard() {
     window.location.href = '/auth/login'; // Redirect to the login page
   };
 
+  const formatDate = (dateString) => {
+    const options = { day: '2-digit', month: 'short', year: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-GB', options);
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -99,7 +104,13 @@ export default function Dashboard() {
                 {forms.slice(0, 4).map((form) => (
                   <div key={form.id} className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                     <h3 className="text-xl font-semibold mb-2">{form.formName}</h3>
-                    <p className="text-gray-600">Details about {form.formName}...</p>
+                    <p className="text-gray-600">Created on: {formatDate(form.createdAt)}</p>
+                    <p className="text-gray-600">{form.description}</p>
+                    <Link href={`/dashboard/forms/${form.id}`}>
+                      <div className="mt-4 text-blue-500 hover:underline cursor-pointer">
+                        View Details
+                      </div>
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -120,7 +131,13 @@ export default function Dashboard() {
                 {folders.slice(0, 4).map((folder) => (
                   <div key={folder.id} className="bg-white p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
                     <h3 className="text-xl font-semibold mb-2">{folder.folderName}</h3>
-                    <p className="text-gray-600">Details about {folder.folderName}...</p>
+                    <p className="text-gray-600">Created on: {formatDate(folder.createdAt)}</p>
+                    <p className="text-gray-600">{folder.description}</p>
+                    <Link href={`/dashboard/folders/${folder.id}`}>
+                      <div className="mt-4 text-green-500 hover:underline cursor-pointer">
+                        View Details
+                      </div>
+                    </Link>
                   </div>
                 ))}
               </div>
