@@ -1,19 +1,35 @@
-'use client'
-import { useState } from 'react';
+'use client';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import CustomSelect from './Custumselect';// Ensure correct path
-
-// Mock data for forms, replace with actual data from your backend or state
-const mockForms = [
-  { value: 1, label: 'Form 1' },
-  { value: 2, label: 'Form 2' },
-  { value: 3, label: 'Form 3' },
-  { value: 4, label: 'Form 4' },
-];
+import CustomSelect from './Custumselect'; // Ensure correct path
+import api from '@/app/lib/axios'; // Ensure correct path
 
 export default function CreateFolder() {
   const [folderName, setFolderName] = useState('');
   const [selectedForms, setSelectedForms] = useState([]);
+  const [forms, setForms] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        const response = await api.get('/api/forms');
+        if (response.status === 200) {
+          const formOptions = response.data.forms.map((form) => ({
+            value: form._id,
+            label: form.formName,
+          }));
+          setForms(formOptions);
+        } else {
+          console.error('Failed to fetch forms');
+        }
+      } catch (error) {
+        console.error('Error fetching forms:', error);
+      }
+    };
+
+    fetchForms();
+  }, []);
 
   const handleFolderNameChange = (e) => {
     setFolderName(e.target.value);
@@ -27,7 +43,7 @@ export default function CreateFolder() {
     e.preventDefault();
     const folderData = {
       folderName,
-      selectedForms
+      selectedForms,
     };
 
     // Log the data to the console
@@ -35,23 +51,17 @@ export default function CreateFolder() {
 
     // Example: Send the data to the server
     try {
-      const response = await fetch('/api/create-folder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(folderData),
-      });
+      const response = await api.post('/api/folders', folderData);
 
-      if (response.ok) {
-        // Handle success
-        console.log('Folder created successfully');
+      if (response.status === 200 && response.data.folder) {
+        window.location.href = '/dashboard';
       } else {
-        // Handle error
-        console.error('Failed to create folder');
+        // Handle specific error messages from the backend
+        setError(response.data.message || 'Creation failed. Please try again.');
       }
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      console.error('Error creating folder:', err);
+      setError('An unexpected error occurred. Please try again.');
     }
   };
 
@@ -75,13 +85,15 @@ export default function CreateFolder() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Select Forms</label>
             <CustomSelect
-              options={mockForms}
+              options={forms}
               selected={selectedForms}
               onChange={handleFormSelection}
               isMulti
             />
             <p className="text-gray-500 text-xs mt-1">Hold down the Ctrl (or Command) key to select multiple options.</p>
           </div>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
 
           <div>
             <button

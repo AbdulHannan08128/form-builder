@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import Link from 'next/link';
+import api from '@/app/lib/axios';
 
 const fieldTypes = [
   { value: 'text', label: 'Text' },
@@ -27,6 +28,7 @@ const fieldTypes = [
 export default function CreateForm() {
   const [formName, setFormName] = useState('');
   const [fields, setFields] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleFormNameChange = (e) => {
     setFormName(e.target.value);
@@ -71,12 +73,28 @@ export default function CreateForm() {
     setFields(fields.filter(field => field.id !== id));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = {
       formName,
       fields
     };
+
+    try {
+      const response = await api.post('/api/forms', formData);
+      console.log('Login response:', response.data);
+
+      if (response.status === 200 && response.data.form) {
+        window.location.href = '/dashboard';
+      } else {
+        // Handle specific error messages from the backend
+        setError(response.data.message || 'Creation failed. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error creating form:', err);
+      setError('An unexpected error occurred. Please try again.');
+    }
+
     // Log the form data to the console
     console.log('Form Submitted:', formData);
   };
@@ -185,6 +203,10 @@ export default function CreateForm() {
               Add Field
             </button>
           </div>
+
+          {error && (
+            <div className="text-red-500 text-center">{error}</div>
+          )}
 
           <div>
             <button
