@@ -31,7 +31,9 @@ export default function Register() {
         // Save the JWT token as a cookie
         Cookies.set('token', response.data.token, { expires: 1 }); // Expires in 1 day
         Cookies.set('user_email', response.data.user.email, { expires: 1 }); // Expires in 1 day
-        
+       
+        Cookies.set('user_name', response.data.user.name, { expires: 1 }); // Expires in 1 day
+
         // Redirect to dashboard or another page
         window.location.href = '/dashboard';
       } else {
