@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/app/lib/mongoose';
 import Folder from '@/app/models/Folder';
 import User from '@/app/models/User';
-import Form from '@/app/models/Form';
 
 // Function to get folders for a specific user by email
 export async function GET(req) {
