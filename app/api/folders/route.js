@@ -37,9 +37,9 @@ export async function POST(req) {
 
   try {
     const data = await req.json();
-    const { folderName, forms } = data;
+    const { folderName, selectedForms } = data;
     const userEmail = req.cookies.get('user_email').value;
-console.log(forms);
+    const forms = selectedForms;
     // Find the user by email
     const user = await User.findOne({ email: userEmail });
     if (!user) {
