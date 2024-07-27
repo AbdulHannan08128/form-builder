@@ -55,12 +55,25 @@ export async function POST(req) {
   }
 }
 
+
 export async function PUT(req) {
   await dbConnect();
 
   try {
     const data = await req.json();
-    const { id, formName, fields, userEmail } = data;
+    const { id: formId, formName, fields } = data;
+
+    const userEmail = req.cookies.get('user_email')?.value;
+
+    // Validate request data
+    if (!formId || !formName || !fields || !Array.isArray(fields)) {
+      return NextResponse.json({ status: 400, message: 'Invalid input data' });
+    }
+
+    // Validate userEmail
+    if (!userEmail) {
+      return NextResponse.json({ status: 400, message: 'User email is required' });
+    }
 
     // Find the user by email
     const user = await User.findOne({ email: userEmail });
@@ -68,18 +81,31 @@ export async function PUT(req) {
       return NextResponse.json({ status: 404, message: 'User not found' });
     }
 
-    // Update the form with the user's reference
-    const updatedForm = await Form.findByIdAndUpdate(
-      id,
-      { formName, fields, user: user._id },
-      { new: true }
-    ).populate('user', 'email');
+    // Process fields without _id or id
+    const updatedFields = fields.map(field => {
+      // Ensure field has the required properties
+      return {
+        type: field.type || '',
+        label: field.label || '',
+        options: field.options || [],
+        defaultOption: field.defaultOption || '',
+        // If _id is missing, it will be omitted from the document update
+      };
+    });
+
+    // Find and update the form
+    const updatedForm = await Form.findOneAndUpdate(
+      { formId, user: user._id }, // Find the form by formId and ensure it belongs to the user
+      { formName, fields: updatedFields }, // Fields to update
+      { new: true, runValidators: true } // Return the updated document and run validators
+    ).populate('user', 'email'); // Populate user to return the user details if needed
 
     if (!updatedForm) {
       return NextResponse.json({ status: 404, message: 'Form not found' });
     }
 
     return NextResponse.json({ status: 200, message: 'Form updated successfully', form: updatedForm });
+
   } catch (error) {
     console.error('Error updating form:', error);
     return NextResponse.json({ status: 500, message: 'Internal Server Error' });
