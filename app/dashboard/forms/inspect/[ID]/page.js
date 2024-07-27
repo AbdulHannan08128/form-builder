@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import api from '@/app/lib/axios'; // Assuming api is correctly configured Axios instance
 import Link from 'next/link';
 
-
 const Page = ({ params }) => {
     const [formData, setFormData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -25,6 +24,21 @@ const Page = ({ params }) => {
 
         fetchData();
     }, [ID]);
+
+    const deleteForm = async () => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this form permanently?");
+
+        if (confirmDelete) {
+            try {
+                const response = await api.delete('/api/forms', { data: { id: ID } });
+                if (response.data.status === 200) {
+                    window.location.href = '/dashboard';
+                }
+            } catch (error) {
+                console.error("Failed to delete the form:", error);
+            }
+        }
+    };
 
     if (loading) return <div className="text-center py-4">Loading...</div>;
     if (error) return <div className="text-center text-red-500 py-4">Error: {error.message}</div>;
@@ -56,10 +70,11 @@ const Page = ({ params }) => {
             </div>
             <div className="mt-6 flex space-x-4">
                 <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={() => alert('Edit functionality is not implemented yet.')}>Edit</button>
-                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onClick={() => alert('Delete functionality is not implemented yet.')}>Delete</button>
+                
+                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600" onClick={deleteForm}>Delete</button>
                 
                 <Link href={`/dashboard/forms/inspect/submissions/${formData.formId}`}>
-                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">View Submissions</button>
+                    <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">View Submissions</button>
                 </Link>
             </div>
         </div>

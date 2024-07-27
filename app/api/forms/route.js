@@ -90,17 +90,24 @@ export async function DELETE(req) {
   await dbConnect();
 
   try {
-    const { id } = await req.json();
+    const { id } = await req.json(); // Custom ID from request body
 
-    const deletedForm = await Form.findByIdAndDelete(id);
+    // Check if id is provided
+    if (!id) {
+      return NextResponse.json({ status: 400, message: 'ID is required' });
+    }
 
+    // Find the form by custom field (e.g., formId)
+    const deletedForm = await Form.findOneAndDelete({ formId: id });
+
+    // Check if the form was found and deleted
     if (!deletedForm) {
       return NextResponse.json({ status: 404, message: 'Form not found' });
     }
 
     return NextResponse.json({ status: 200, message: 'Form deleted successfully' });
   } catch (error) {
-    console.error('Error deleting form:', error);
+    console.log('Error deleting form:', error);
     return NextResponse.json({ status: 500, message: 'Internal Server Error' });
   }
 }
