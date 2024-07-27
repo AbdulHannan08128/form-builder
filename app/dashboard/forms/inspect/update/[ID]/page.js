@@ -38,7 +38,7 @@ export default function UpdateForm({ params }) {
   useEffect(() => {
     const fetchFormData = async () => {
       try {
-        const response = await api.post(`/api/form/`, { ID });
+        const response = await api.post('/api/form/', { ID });
         const { form } = response.data;
         setFormName(form.formName);
         setFields(form.fields);
@@ -104,7 +104,7 @@ export default function UpdateForm({ params }) {
     };
 
     try {
-      const response = await api.put(`/api/forms`, { id: ID, ...updatedFormData });
+      const response = await api.put('/api/forms', { id: ID, ...updatedFormData });
       if (response.status === 200 && response.data.form) {
         router.push('/dashboard');
       } else {
@@ -120,30 +120,30 @@ export default function UpdateForm({ params }) {
   if (error) return <div className="text-center text-red-500 py-4">{error}</div>;
 
   return (
-    <main className="flex flex-col items-center justify-center w-screen h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
-      <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-2xl lg:max-w-3xl">
-        <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center">Update Form</h1>
-        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-8 px-4">
+      <div className="w-full max-w-3xl bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-center mb-6">Update Form</h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Form Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Form Name</label>
             <input
               type="text"
               value={formName}
               onChange={handleFormNameChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               required
             />
           </div>
 
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">Form Fields</h2>
+            <h2 className="text-lg font-semibold mb-4">Form Fields</h2>
             {fields.map((field) => (
-              <div key={field.id} className="flex flex-col space-y-4 mb-4 sm:mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+              <div key={field.id} className="bg-gray-50 p-4 rounded-md shadow-sm mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-4">
                   <select
                     value={field.type}
                     onChange={(e) => handleFieldChange(field.id, 'type', e.target.value)}
-                    className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   >
                     {fieldTypes.map(type => (
                       <option key={type.value} value={type.value}>
@@ -156,7 +156,7 @@ export default function UpdateForm({ params }) {
                     placeholder="Field Label"
                     value={field.label}
                     onChange={(e) => handleFieldChange(field.id, 'label', e.target.value)}
-                    className="mt-2 sm:mt-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-2 sm:mt-0 flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   />
                   <button
                     type="button"
@@ -166,17 +166,18 @@ export default function UpdateForm({ params }) {
                     Remove
                   </button>
                 </div>
+
                 {['select', 'radio', 'checkbox'].includes(field.type) && (
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold">Options</h3>
+                  <div className="space-y-4 mb-4">
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">Options</h3>
                     {field.options.map((option, index) => (
-                      <div key={index} className="flex items-center space-x-2">
+                      <div key={index} className="flex items-center space-x-2 mb-2">
                         <input
                           type="text"
                           placeholder={`Option ${index + 1}`}
                           value={option}
                           onChange={(e) => handleOptionChange(field.id, index, e.target.value)}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         />
                         <button
                           type="button"
@@ -190,27 +191,10 @@ export default function UpdateForm({ params }) {
                     <button
                       type="button"
                       onClick={() => handleAddOption(field.id)}
-                      className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                      className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       Add Option
                     </button>
-                    {field.type !== 'select' && (
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700">Default Option</label>
-                        <select
-                          value={field.defaultOption}
-                          onChange={(e) => handleFieldChange(field.id, 'defaultOption', e.target.value)}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          <option value="">None</option>
-                          {field.options.map((option, index) => (
-                            <option key={index} value={option}>
-                              {option}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -218,33 +202,29 @@ export default function UpdateForm({ params }) {
             <button
               type="button"
               onClick={handleAddField}
-              className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
             >
-              Add Field
+              Add New Field
             </button>
           </div>
 
-          {error && (
-            <div className="text-red-500 text-center">{error}</div>
-          )}
-
-          <div>
+          <div className="flex justify-end space-x-4">
+            <Link href="/dashboard">
+              <button
+                type="button"
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+              >
+                Cancel
+              </button>
+            </Link>
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               Update Form
             </button>
           </div>
         </form>
-
-        <div className="mt-4 sm:mt-6 text-center">
-          <Link href="/dashboard">
-            <div className="text-blue-500 hover:underline cursor-pointer">
-              Back to Dashboard
-            </div>
-          </Link>
-        </div>
       </div>
     </main>
   );

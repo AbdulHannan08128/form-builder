@@ -113,77 +113,79 @@ export default function DynamicForm({ params }) {
   }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md">
-      <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800">{formData.formName}</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {formData.fields.map((field) => {
-          const { type, label, options, _id } = field;
-          const fieldKey = label.replace(/\s+/g, '_');
-          return (
-            <div key={_id.$oid} className="flex flex-col">
-              <label className="mb-2 text-lg font-medium text-gray-700">{label}</label>
-              {type === 'select' ? (
-                <select
-                  name={fieldKey}
-                  value={formValues[fieldKey]}
-                  onChange={handleChange}
-                  className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {options.map((option, index) => (
-                    <option key={index} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              ) : type === 'textarea' ? (
-                <textarea
-                  name={fieldKey}
-                  value={formValues[fieldKey]}
-                  onChange={handleChange}
-                  className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="4"
-                />
-              ) : type === 'checkbox' || type === 'radio' ? (
-                options.map((option, index) => (
-                  <label key={index} className="inline-flex items-center space-x-2">
-                    <input
-                      type={type}
-                      name={fieldKey}
-                      value={option}
-                      checked={formValues[fieldKey] === option}
-                      onChange={handleChange}
-                      className="form-checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <span className="text-gray-700">{option}</span>
-                  </label>
-                ))
-              ) : type === 'file' ? (
-                <input
-                  type={type}
-                  name={fieldKey}
-                  onChange={handleChange}
-                  className="border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              ) : (
-                <input
-                  type={type}
-                  name={fieldKey}
-                  value={formValues[fieldKey]}
-                  onChange={handleChange}
-                  className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              )}
-            </div>
-          );
-        })}
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-3 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          disabled={loading}
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="p-8 max-w-lg w-full bg-white rounded-lg shadow-lg border border-gray-200">
+        <h1 className="text-4xl font-bold mb-8 text-center text-gray-800">{formData.formName}</h1>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {formData.fields.map((field) => {
+            const { type, label, options, _id } = field;
+            const fieldKey = label.replace(/\s+/g, '_');
+            return (
+              <div key={_id.$oid} className="flex flex-col">
+                <label className="mb-3 text-lg font-medium text-gray-800">{label}</label>
+                {type === 'select' ? (
+                  <select
+                    name={fieldKey}
+                    value={formValues[fieldKey]}
+                    onChange={handleChange}
+                    className="p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    {options.map((option, index) => (
+                      <option key={index} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                ) : type === 'textarea' ? (
+                  <textarea
+                    name={fieldKey}
+                    value={formValues[fieldKey]}
+                    onChange={handleChange}
+                    className="p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows="5"
+                  />
+                ) : type === 'checkbox' || type === 'radio' ? (
+                  options.map((option, index) => (
+                    <label key={index} className="inline-flex items-center space-x-3">
+                      <input
+                        type={type}
+                        name={fieldKey}
+                        value={option}
+                        checked={formValues[fieldKey] === option}
+                        onChange={handleChange}
+                        className="form-checkbox h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-gray-700">{option}</span>
+                    </label>
+                  ))
+                ) : type === 'file' ? (
+                  <input
+                    type={type}
+                    name={fieldKey}
+                    onChange={handleChange}
+                    className="border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                ) : (
+                  <input
+                    type={type}
+                    name={fieldKey}
+                    value={formValues[fieldKey]}
+                    onChange={handleChange}
+                    className="p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                )}
+              </div>
+            );
+          })}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white p-4 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 ease-in-out"
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : 'Submit'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
