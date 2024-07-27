@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState, useRef, useEffect } from 'react';
 
 const CustomSelect = ({ options, selected, onChange, isMulti }) => {
@@ -16,7 +16,6 @@ const CustomSelect = ({ options, selected, onChange, isMulti }) => {
     }
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -28,22 +27,21 @@ const CustomSelect = ({ options, selected, onChange, isMulti }) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Create a label for the selected options
   const selectedLabels = isMulti
     ? options.filter(opt => selected.includes(opt.value)).map(opt => opt.label).join(', ') || 'Select forms'
     : options.find(opt => opt.value === selected[0])?.label || 'Select a form';
 
   return (
-    <div ref={containerRef} className="relative inline-block w-full">
+    <div ref={containerRef} className="relative w-full">
       <div
-        className="bg-white border border-gray-300 rounded-lg shadow-sm p-2 cursor-pointer flex flex-wrap items-center justify-between"
+        className="bg-white border border-gray-300 rounded-lg shadow-sm p-2 cursor-pointer flex justify-between items-center"
         onClick={toggleDropdown}
       >
         <span>{selectedLabels}</span>
         <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
       </div>
       {isOpen && (
-        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+        <div className="absolute mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg z-10 max-h-60 overflow-auto">
           {options.map((option) => (
             <div
               key={option.value}
