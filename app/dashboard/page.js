@@ -106,7 +106,7 @@ export default function Dashboard() {
                     <h3 className="text-xl font-semibold mb-2">{form.formName}</h3>
                     <p className="text-gray-600">Created on: {formatDate(form.createdAt)}</p>
                     <p className="text-gray-600">{form.description}</p>
-                    <Link href={`/dashboard/forms/${form.id}`}>
+                    <Link href={`/dashboard/forms/inspect/${form.formId}`}>
                       <div className="mt-4 text-blue-500 hover:underline cursor-pointer">
                         View Details
                       </div>
