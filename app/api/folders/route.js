@@ -65,8 +65,15 @@ export async function PUT(req) {
   await dbConnect();
 
   try {
-    const data = await req.json();
-    const { id, folderName, forms, userEmail } = data;
+    const { id, folderName, forms } = await req.json();
+    console.log(id);
+    console.log(folderName);
+    console.log(forms);
+    const userEmail = req.cookies.get('user_email').value;
+
+    if (!userEmail) {
+      return NextResponse.json({ status: 400, message: 'User email is required' });
+    }
 
     // Find the user by email
     const user = await User.findOne({ email: userEmail });
@@ -75,8 +82,8 @@ export async function PUT(req) {
     }
 
     // Update the folder with the user's reference and forms
-    const updatedFolder = await Folder.findByIdAndUpdate(
-      id,
+    const updatedFolder = await Folder.findOneAndUpdate(
+      {folderId:id},
       { folderName, forms, user: user._id },
       { new: true }
     ).populate('forms').populate('user', 'email');
@@ -96,9 +103,9 @@ export async function DELETE(req) {
   await dbConnect();
 
   try {
-    const { id } = await req.json();
+    const { ID } = await req.json();
 
-    const deletedFolder = await Folder.findByIdAndDelete(id);
+    const deletedFolder = await Folder.findOneAndDelete({ folderId: ID });
 
     if (!deletedFolder) {
       return NextResponse.json({ status: 404, message: 'Folder not found' });
@@ -110,3 +117,5 @@ export async function DELETE(req) {
     return NextResponse.json({ status: 500, message: 'Internal Server Error' });
   }
 }
+
+

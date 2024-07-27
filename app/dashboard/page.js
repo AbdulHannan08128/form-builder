@@ -136,7 +136,7 @@ export default function Dashboard() {
                     <p className="text-gray-600 text-sm">Created on: {formatDate(folder.createdAt)}</p>
                     <p className="text-gray-600 text-sm">{folder.description}</p>
                     <div className="mt-4 text-green-600 text-sm">
-                      <Link href={`/dashboard/folders/${folder.id}`} className="hover:underline">
+                      <Link href={`/dashboard/folders/inspect/${folder.folderId}`} className="hover:underline">
                         View Details
                       </Link>
                     </div>
