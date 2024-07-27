@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import api from '@/app/lib/axios';
 import Link from 'next/link';
+import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique IDs
 
 const fieldTypes = [
   { value: 'text', label: 'Text' },
@@ -41,7 +42,7 @@ export default function UpdateForm({ params }) {
         const response = await api.post('/api/form/', { ID });
         const { form } = response.data;
         setFormName(form.formName);
-        setFields(form.fields);
+        setFields(form.fields.map(field => ({ ...field, id: field.id || uuidv4() }))); // Ensure unique IDs
       } catch (err) {
         console.error('Error fetching form data:', err);
         setError('Failed to load form data.');
@@ -58,42 +59,56 @@ export default function UpdateForm({ params }) {
   };
 
   const handleAddField = () => {
-    setFields([
-      ...fields,
-      { id: Date.now(), type: 'text', label: '', options: [], defaultOption: '' }
+    setFields(prevFields => [
+      ...prevFields,
+      { id: uuidv4(), type: 'text', label: '', options: [], defaultOption: '' }
     ]);
   };
 
   const handleFieldChange = (id, key, value) => {
-    setFields(fields.map(field =>
-      field.id === id ? { ...field, [key]: value } : field
-    ));
+    setFields(prevFields =>
+      prevFields.map(field =>
+        field.id === id ? { ...field, [key]: value } : field
+      )
+    );
   };
 
   const handleAddOption = (id) => {
-    setFields(fields.map(field =>
-      field.id === id ? { ...field, options: [...field.options, ''] } : field
-    ));
+    setFields(prevFields =>
+      prevFields.map(field =>
+        field.id === id ? { ...field, options: [...field.options, ''] } : field
+      )
+    );
   };
 
   const handleOptionChange = (id, index, value) => {
-    setFields(fields.map(field =>
-      field.id === id
-        ? { ...field, options: field.options.map((option, i) => (i === index ? value : option)) }
-        : field
-    ));
+    setFields(prevFields =>
+      prevFields.map(field =>
+        field.id === id
+          ? {
+              ...field,
+              options: field.options.map((option, i) => (i === index ? value : option))
+            }
+          : field
+      )
+    );
   };
 
   const handleRemoveOption = (id, index) => {
-    setFields(fields.map(field =>
-      field.id === id
-        ? { ...field, options: field.options.filter((_, i) => i !== index) }
-        : field
-    ));
+    setFields(prevFields =>
+      prevFields.map(field =>
+        field.id === id
+          ? {
+              ...field,
+              options: field.options.filter((_, i) => i !== index)
+            }
+          : field
+      )
+    );
   };
 
   const handleRemoveField = (id) => {
-    setFields(fields.filter(field => field.id !== id));
+    setFields(prevFields => prevFields.filter(field => field.id !== id));
   };
 
   const handleSubmit = async (e) => {
@@ -208,7 +223,7 @@ export default function UpdateForm({ params }) {
             </button>
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end space-x-4 mt-8">
             <Link href="/dashboard">
               <button
                 type="button"
