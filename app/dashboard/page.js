@@ -111,6 +111,12 @@ export default function Dashboard() {
                         View Details
                       </div>
                     </Link>
+                    <Link href={`/form/${form.formId}`}>
+                      <div className="mt-2 text-blue-500 hover:underline cursor-pointer">
+                        Live Form
+                      </div>
+                    </Link>
+                    
                   </div>
                 ))}
               </div>
